@@ -3,7 +3,9 @@ function GridData() {
 	this.isBomb = false;
 	this.roundHasBomb = 0;
 	this.isEmpty = false;
+	this.isCover = true;
 }
+
 function injectBomb(qty, data) {
 	const w = data[0].length - 1;
 	const h = data.length - 1;

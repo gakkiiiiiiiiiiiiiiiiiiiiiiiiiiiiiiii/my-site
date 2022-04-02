@@ -1,9 +1,12 @@
 <template>
-	<div class="w-screen h-screen pt-10 bg-blue-100">
+	<div class="w-screen h-screen pt-10">
+		<p class="text-5xl mb-10" :class="isFail ? 'text-red-500' : 'text-blue-300'">
+			<span @click="init()" class="cursor-pointer">{{ isFail ? '😆' : '🙂' }} </span>
+		</p>
 		<div class="flex w-fit border-solid border-2 border-slate-200 mx-auto">
-			<div v-for="(y, yIndex) in gridData" :key="yIndex" class="grid-size">
-				<div v-for="(x, xIndex) in y" :key="xIndex" class="grid-size flex justify-center items-center cursor-pointer">
-					{{ x.isBomb ? '💣' : `${x.roundHasBomb}` }}
+			<div v-for="(y, yIndex) in gridDataList" :key="yIndex">
+				<div v-for="(x, xIndex) in y" :key="xIndex">
+					<Grid :gridData="x" @toEnd="toEnd" />
 				</div>
 			</div>
 		</div>
@@ -16,8 +19,12 @@ import Grid from './Grid.vue';
 export default {
 	data() {
 		return {
-			gridData: [],
+			gridDataList: [],
+			isFail: false,
 		};
+	},
+	components: {
+		Grid,
 	},
 	created() {
 		this.init();
@@ -27,15 +34,20 @@ export default {
 			const w = 9;
 			const h = 9;
 			const bomb = 10;
-			this.gridData = buildGridDatas({ w, h, bomb });
+			this.isFail = false;
+			this.gridDataList = buildGridDatas({ w, h, bomb });
+		},
+		toEnd(isFail) {
+			this.isFail = isFail;
+			this.gridDataList.forEach((list) => {
+				list.forEach((item) => {
+					item.isCover = false;
+				});
+			});
 		},
 	},
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-.grid-size {
-	@apply w-14 h-14 border-solid border-2 bg-blue-400 select-none;
-}
-</style>
+<style></style>

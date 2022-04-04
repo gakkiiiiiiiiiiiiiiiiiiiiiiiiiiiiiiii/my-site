@@ -1,11 +1,18 @@
 import { getRandomInt } from '@/utils/common';
-function GridData() {
+function GridData({ x, y }) {
 	this.isBomb = false;
 	this.roundHasBomb = 0;
 	this.isEmpty = false;
 	this.isCover = true;
+	this.isFlag = false;
+	this.contentType = 1;
+	this.coordinate = {
+		x,
+		y,
+	};
 }
 
+//注入炸弹
 function injectBomb(qty, data) {
 	const w = data[0].length - 1;
 	const h = data.length - 1;
@@ -27,13 +34,16 @@ function injectBomb(qty, data) {
 	}
 }
 
+// 计算当前格子附近炸弹数量
 function roundBombComputed(data, { x, y, w, h }) {
 	let coordinateArr = getRoundCoordinate({ x, y, w, h });
 	coordinateArr.forEach((item) => {
 		data[item[0]][item[1]].roundHasBomb++;
 	});
 }
-function getRoundCoordinate({ x, y, w, h }) {
+
+// 获取附近格子合法坐标
+export function getRoundCoordinate({ x, y, w, h }) {
 	let coordinate = {};
 	coordinate.top = [x, y - 1];
 	coordinate.bottom = [x, y + 1];
@@ -62,7 +72,12 @@ export function buildGridDatas({ w, h, bomb }) {
 	for (let x = 0; x < w; x++) {
 		let arr2 = [];
 		for (let y = 0; y < h; y++) {
-			arr2.push(new GridData());
+			arr2.push(
+				new GridData({
+					x,
+					y,
+				})
+			);
 		}
 		arr.push(arr2);
 	}

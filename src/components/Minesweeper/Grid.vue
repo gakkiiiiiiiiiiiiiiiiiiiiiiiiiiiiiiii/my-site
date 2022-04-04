@@ -1,10 +1,12 @@
 <template>
 	<div
 		class="grid-size text-white flex justify-center items-center cursor-pointer"
-		:class="gridData.isCover ? 'bg-gray-400' : 'bg-blue-400'"
-		@click="clickGrid(gridData)"
+		:class="getGridClass(gridData)"
+		@click.once="clickGrid(gridData)"
+		@dblclick="dbClick(gridData)"
+		@click.prevent.right="addFlag(gridData)"
 	>
-		<div>{{ gridData.isCover ? '' : gridInsideContent }}</div>
+		<div>{{ gridContent }}</div>
 	</div>
 </template>
 
@@ -16,19 +18,45 @@ export default {
 			required: true,
 		},
 	},
-	emits: ['toEnd'],
+	emits: ['toEnd', 'reverseAroundGrid'],
 	computed: {
 		gridInsideContent() {
 			let { isBomb, roundHasBomb } = this.gridData;
-			return isBomb ? '💣' : roundHasBomb;
+			return isBomb ? '💣' : roundHasBomb || '';
+		},
+		gridContent() {
+			let { isCover, isFlag } = this.gridData;
+			const contentMap = {
+				1: '',
+				2: this.gridInsideContent,
+				3: '🚩',
+			};
+			this.gridData.contentType = isFlag ? 3 : isCover ? 1 : 2;
+			return contentMap[this.gridData.contentType];
 		},
 	},
 	methods: {
 		clickGrid(gridData) {
-			gridData.isCover = false;
-			if (gridData.isBomb) {
-				this.$emit('toEnd', true);
+			if (!gridData.isFlag) {
+				gridData.isCover = false;
+				if (gridData.isBomb) {
+					this.$emit('toEnd', true);
+				}
 			}
+		},
+
+		dbClick({ isBomb, roundHasBomb, coordinate, isFlag }) {
+			if (!isBomb && !roundHasBomb && !isFlag) {
+				this.$emit('reverseAroundGrid', coordinate);
+			}
+		},
+
+		getGridClass(gridData) {
+			return gridData.isCover ? 'grid-default' : 'grid-filp';
+		},
+
+		addFlag(gridData) {
+			gridData.isFlag = gridData.isCover;
 		},
 	},
 };
@@ -37,5 +65,11 @@ export default {
 <style>
 .grid-size {
 	@apply w-14 h-14  border-solid border-2  select-none;
+}
+.grid-filp {
+	@apply bg-blue-400;
+}
+.grid-default {
+	@apply bg-gray-400 hover:shadow hover:bg-gray-700;
 }
 </style>

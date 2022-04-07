@@ -2,7 +2,7 @@
 	<div
 		class="grid-size text-white flex justify-center items-center cursor-pointer"
 		:class="getGridClass(gridData)"
-		@click.once="clickGrid(gridData)"
+		@click="clickGrid(gridData)"
 		@dblclick="dbClick(gridData)"
 		@click.prevent.right="addFlag(gridData)"
 	>

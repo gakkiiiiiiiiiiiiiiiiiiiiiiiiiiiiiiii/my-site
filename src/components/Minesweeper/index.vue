@@ -45,7 +45,7 @@ export default {
 			handler(val) {
 				let count = this.counteReverseGrid(val);
 				let gridSum = w * h;
-				if (gridSum - bomb == count && !this.isSuccess) {
+				if (gridSum - bomb == count && !this.isSuccess && !this.isFail) {
 					alert('you win!!!');
 					this.isSuccess = true;
 					this.reverseGridList(val);
